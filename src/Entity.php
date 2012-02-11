@@ -1,14 +1,32 @@
 <?php
 /**
- * 
- * File Entity.php 
+ * This file includes implementation of base abstract class for all
+ * sejmometr api classes - Entity
  *
- * This file includes definition of Entity class.
- * @category
+ * PHP version 5.3
  * 
+ * @abstract 
+ * @category  Sejmometr
+ * @package   Sejmometr
+ * @author    Jarek Sobiecki <jsobiecki@itparpanie.pl> 
+ * @copyright 2012 Jarek Sobiecki <jsobiecki@itparpanie.pl>
+ * @license   LGPL {@link http://www.gnu.org/licenses/lgpl-3.0.html}
+ * @version   GIT: $id$
+ * @link      http://github.com/harijari/phpSejmometr
  */
 namespace Sejmometr;
 
+/**
+ * Entity 
+ * 
+ * @abstract 
+ * @category  Sejmometr
+ * @package   Sejmometr
+ * @author    Jarek Sobiecki <jsobiecki@itparpanie.pl>
+ * @copyright 2012 Jarek Sobiecki <jsobiecki@itparpanie.pl>
+ * @license   LGPL {@link http://www.gnu.org/licenses/lgpl-3.0.html}
+ * @link      http://github.com/harijari/phpSejmometr
+ */
 abstract class  Entity
 {
     protected $cache = array();
@@ -19,14 +37,14 @@ abstract class  Entity
      * - makes GET request to API server
      * - deserializes output (we assume that API is JSON based)
      *
-     * @param string $url
-     *   This url points to method of API
+     * @param string $url This url points to method of API
      *
      * @return 
      *   NULL value, if something went wrong
      *   deserialized API call value, if everything went OK
      */
-    public static function request($url) {
+    public static function request($url) 
+    {
         static $request_cache = array();
     
         if (isset($request_cache[$url])) {
@@ -47,7 +65,18 @@ abstract class  Entity
     }
   
   
-    public static function retrieve($type, Array $object_ids = array()) {
+    /**
+     * retrieve 
+     * 
+     * @param mixed $type       Created class type name
+     * @param Array $object_ids Array with id of class of $type instances
+     *
+     * @static
+     * @access public
+     * @return Array Array of class $type instances. 
+     */
+    public static function retrieve($type, Array $object_ids = array()) 
+    {
         static $object_cache = array();
         $output = array();
     
@@ -72,12 +101,33 @@ abstract class  Entity
     
         return $output;
     }
-  
+
+
+    /**
+     * getInfo This method retrieves basic information about entity. 
+     * 
+     * @abstract
+     * @access public
+     * @return mixed This method returns basic information about entity. Mostly
+     * it will be array with various data.
+     */
     abstract public function getInfo();
   
-    public function __get($name) {
+    /**
+     * __get Implementation of magic __get method. In general, it will
+     *  try to retrieve data from API server. If getInfo return value included
+     *  field with $name as key, this value will be returned. If no, method
+     *  will fail and throw exception
+     * 
+     * @param mixed $name Name of undefined property in class
+     *
+     * @access public
+     * @return mixed Value of field with getInfo() method
+     */
+    public function __get($name) 
+    {
         if (!isset($this->cache['info'])) {
-            $cache['info'] = $this->getInfo();
+            $this->cache['info'] = $this->getInfo();
         }
   
         if (isset($this->cache['info']) && isset($this->cache['info'][$name])) {
@@ -88,5 +138,4 @@ abstract class  Entity
             );
         }
     }
-
 }
